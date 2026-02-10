@@ -1,0 +1,13 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "5a5a1ee49d09",
+  "session_id": "0848d326-d20a-4593-8d6e-840180d6ad32",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-10T23:17:19.265814Z",
+  "branch": "feat/v0.4.0-ssm-secretsmanager",
+  "checkpoints_count": 0,
+  "files_touched": null,
+  "agent": "Claude Code",
+  "is_task": true,
+  "tool_use_id": "toolu_012JTj98UhCnFnkYqHxgWpJT"
+}
