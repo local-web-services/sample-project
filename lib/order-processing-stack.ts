@@ -9,6 +9,8 @@ import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as apigwv2Integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 
 export class OrderProcessingStack extends cdk.Stack {
@@ -48,6 +50,23 @@ export class OrderProcessingStack extends cdk.Stack {
       topicName: 'order-notifications',
     });
 
+    // SSM Parameter Store
+    const appConfigParam = new ssm.StringParameter(this, 'AppConfigParam', {
+      parameterName: '/orders/config/max-items',
+      stringValue: '100',
+      description: 'Maximum items per order',
+    });
+
+    // Secrets Manager
+    const notificationApiKey = new secretsmanager.Secret(this, 'NotificationApiKey', {
+      secretName: 'orders/notification-api-key',
+      description: 'API key for the notification service',
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({ apiKey: 'local-dev-key-12345' }),
+        generateStringKey: 'generated',
+      },
+    });
+
     // Lambda Functions
     const createOrderFn = new lambda.Function(this, 'CreateOrderFunction', {
       functionName: 'CreateOrderFunction',
@@ -79,6 +98,8 @@ export class OrderProcessingStack extends cdk.Stack {
         TABLE_NAME: ordersTable.tableName,
         TOPIC_ARN: notificationTopic.topicArn,
         BUCKET_NAME: receiptsBucket.bucketName,
+        MAX_ITEMS_PARAM: appConfigParam.parameterName,
+        NOTIFICATION_SECRET_ARN: notificationApiKey.secretArn,
       },
     });
 
@@ -100,6 +121,8 @@ export class OrderProcessingStack extends cdk.Stack {
     notificationTopic.grantPublish(processOrderFn);
     receiptsBucket.grantWrite(processOrderFn);
     receiptsBucket.grantWrite(generateReceiptFn);
+    appConfigParam.grantRead(processOrderFn);
+    notificationApiKey.grantRead(processOrderFn);
 
     // SQS Event Source for ProcessOrderFunction
     processOrderFn.addEventSource(new lambdaEvents.SqsEventSource(orderQueue, {
