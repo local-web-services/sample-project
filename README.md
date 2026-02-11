@@ -69,7 +69,7 @@ Start the local development environment with LDK:
 ldk dev
 ```
 
-This starts all services locally (API Gateway, DynamoDB, SQS, S3, SNS, Step Functions) and watches for file changes.
+This starts all services locally (API Gateway, DynamoDB, SQS, S3, SNS, Step Functions, SSM Parameter Store, Secrets Manager) and watches for file changes.
 
 ### Available Local Resources
 
