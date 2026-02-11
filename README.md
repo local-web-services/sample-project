@@ -52,13 +52,20 @@ ldk-sample-project/
 
 - [Node.js](https://nodejs.org/) >= 20.x
 - [AWS CDK](https://docs.aws.amazon.com/cdk/) >= 2.170.0
-- [LDK](https://github.com/local-development-kit/ldk) for local development
+- [Docker](https://docs.docker.com/get-docker/)
+- [LDK](https://github.com/local-web-services/local-web-services) for local development
 
 ## Setup
 
 ```bash
 npm install
 npx cdk synth
+```
+
+Pull the Lambda runtime images (one-time setup):
+
+```bash
+ldk setup lambda
 ```
 
 ## Local Development
